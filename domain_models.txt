@@ -1,0 +1,34 @@
+EventStatuses: tuple = (
+    'future',
+    'ongoing',
+    'finished'
+)
+def calculate_coefficient(strength_1: int, strength_2: int) -> int:
+    return (1.2, 8.0)
+
+Team (id=1)
+    name: str = 'France'
+    power: int = 10
+
+Team (id=2)
+    name: str = 'Serbia'
+    power: int = 2
+
+Event (id=1)
+    status: str = EventStatuses
+    result: str = 'team_1 won' | 'team_2 won'
+    type: str = 'Soccer'
+    team_1: Team = id 1
+    team_2: Team = id 2
+
+Bet
+    event_id: int = 1
+    user_id: int = 1
+    amount 1000
+    chosen_team_id: int
+
+calculate_won_amount():
+    return amount * coefficient
+
+User (Client) (id=1)
+    balance: int = 5000

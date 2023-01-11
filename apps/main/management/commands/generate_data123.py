@@ -1,31 +1,25 @@
-# Python
-import random
+# Python modules
 from typing import Any
-from datetime import datetime
-
-# Third party
+import random
+import datetime
+# Django modules
+from django.core.management.base import BaseCommand
+from apps.main.models import (
+    Player,
+    Team,
+    Stadium    
+)
+# Third party modules
 import names
 import requests
 from requests.models import Response
 
-# Django
-from django.core.management.base import BaseCommand
-
-# First party
-from main.models import (
-    Player,
-    Stadium,
-    Team
-)
-
-
 class Command(BaseCommand):
-    """Custom command for filling up database."""
-
-    help = 'Custom command for filling up database.'
+    """Custom command for filling up database"""
 
     def __init__(self, *args: Any, **kwargs: Any) -> None:
         pass
+
 
     def generate_players(self) -> None:
 
@@ -59,12 +53,7 @@ class Command(BaseCommand):
                 )
             )
 
-    def generate_teams_and_stadiums(self) -> None:
-
-        def generate_stadium_title(code: str) -> str:
-            if isinstance(code, None):
-                return f'Some Stadium'
-            return f'{code} Stadium'
+    def generate_teams_and_stadiums_and_players(self) -> None:
 
         countries_url: str = (
             'https://raw.githubusercontent.com/annexare/Countries/master/data/'
@@ -95,7 +84,7 @@ class Command(BaseCommand):
                 print('Error')
                 return
 
-            data: dict[str, str | list[dict[str, str]]] = response.json()
+            data: dict[str, list[dict[str, str]]] = response.json()
             obj: dict[str, str]
             for obj in data['clubs']:
                 capital: str = countries.get(
@@ -105,9 +94,7 @@ class Command(BaseCommand):
                 stadium: Stadium
                 _: bool
                 stadium, _ = Stadium.objects.get_or_create(
-                    title=generate_stadium_title(
-                        obj['code']
-                    ),
+                    title=f'{obj["code"]} Stadium',
                     capacity=random.randrange(
                         40000,
                         100000,
@@ -120,12 +107,41 @@ class Command(BaseCommand):
                     stadium=stadium
                 )
 
-    def handle(self, *args: Any, **kwargs: Any) -> None:
-        """Handles data filling."""
+                team = Team.objects.filter(title=obj['name']).first()
+                
+                MAX_POWER: int = 99
+                MIN_POWER: int = 30
+                MAX_AGE: int = 40
+                MIN_AGE: int = 17
+                for _ in range(11):
+                    Player.objects.create(
+                    status=1,
+                    name=names.get_first_name(
+                        gender='male'
+                    ),
+                    surname=names.get_last_name(),
+                    power=random.randrange(
+                        MIN_POWER,
+                        MAX_POWER
+                    ),
+                    age=random.randrange(
+                        MIN_AGE,
+                        MAX_AGE
+                    ),
+                    team=team
+            )
+    
+    def remove_all(self):
+        Player.objects.all().delete()
+        Team.objects.all().delete()
+        Stadium.objects.all().delete()
 
-        start: datetime = datetime.now()
-        #self.generate_players()
-        self.generate_teams_and_stadiums()
+    def handle(self, *args: Any, **kwargs: Any) -> None:
+        start: datetime = datetime.datetime.now()
+
+        # self.remove_all()                
+        self.generate_teams_and_stadiums_and_players() 
+
         print(
-            f'Generated in: {(datetime.now()-start).total_seconds()} seconds'
+            f"Genereated in: {(datetime.datetime.now()-start).total_seconds()}"
         )

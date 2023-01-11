@@ -1,6 +1,10 @@
+# Future
+from __future__ import annotations
+
 from typing import Any
 from django.db import models
 from django.db.models.query import QuerySet
+from django.core.exceptions import ValidationError
 
 
 class Team(models.Model):
@@ -103,19 +107,32 @@ class Player(models.Model):
         
     def __str__(self) -> str:
         return f'{self.name} {self.surname} | {self.power}'
-    
+
+    def clean(self) -> None:
+        if (self.age < 17) or (self.age >= 50):
+            raise ValidationError('Player age invalid')
+        if self.power < 50:
+            raise ValidationError('Player power invalid')
+
     def save(
         self,
         *args: Any,
         **kwargs: Any
     ) -> None:
+        self.full_clean()
         super().save(*args, **kwargs)
     
-    def delete(self) -> None:
-        self.status = self.FREE_AGENT
-        self.save(
-            update_fields=('status',)
-        )
+    def delete(
+        self,
+        *args: Any,
+        **kwargs: Any
+    ) -> None:
+        # self.status = self.FREE_AGENT
+        # self.save(
+        #     update_fields=('status',)
+        # )
+        super().delete(*args, **kwargs)
+
 
 
 class Stadium(models.Model):

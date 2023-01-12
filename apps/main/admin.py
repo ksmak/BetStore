@@ -16,7 +16,7 @@ class PlayerAdmin(admin.ModelAdmin):
         'surname',
         'power'
     )
-    
+
     readonly_fields = (
         'status',
     )
@@ -37,14 +37,22 @@ class PlayerAdmin(admin.ModelAdmin):
             'surname',
             'age'
         )
-    
+
     def has_add_permission(self, request: WSGIRequest) -> bool:
         return True
 
-    def has_change_permission(self, request: WSGIRequest, obj: Any=None) -> bool:
+    def has_change_permission(
+        self,
+        request: WSGIRequest,
+        obj: Any = None
+    ) -> bool:
         return True
 
-    def has_delete_permission(self, request: WSGIRequest, obj: Any=None) -> bool:
+    def has_delete_permission(
+        self,
+        request: WSGIRequest,
+        obj: Any = None
+    ) -> bool:
         return True
 
 
@@ -76,12 +84,20 @@ class TeamAdmin(admin.ModelAdmin):
     def has_add_permission(self, request: WSGIRequest) -> bool:
         return True
 
-    def has_change_permission(self, request: WSGIRequest, obj: Any=None) -> bool:
+    def has_change_permission(
+        self,
+        request: WSGIRequest,
+        obj: Any = None
+    ) -> bool:
         return True
 
-    def has_delete_permission(self, request: WSGIRequest, obj: Any=None) -> bool:
+    def has_delete_permission(
+        self,
+        request: WSGIRequest,
+        obj: Any = None
+    ) -> bool:
         return True
-    
+
 
 class StadiumAdmin(admin.ModelAdmin):
     """ StadiumAdmin """
@@ -93,7 +109,7 @@ class StadiumAdmin(admin.ModelAdmin):
         'capacity',
         'city'
     )
-    
+
     def get_readonly_fields(
         self,
         request: WSGIRequest,
@@ -113,13 +129,21 @@ class StadiumAdmin(admin.ModelAdmin):
     def has_add_permission(self, request: WSGIRequest) -> bool:
         return True
 
-    def has_change_permission(self, request: WSGIRequest, obj: Any=None) -> bool:
+    def has_change_permission(
+        self,
+        request: WSGIRequest,
+        obj: Any = None
+    ) -> bool:
         return True
 
-    def has_delete_permission(self, request: WSGIRequest, obj: Any=None) -> bool:
+    def has_delete_permission(
+        self,
+        request: WSGIRequest,
+        obj: Any = None
+    ) -> bool:
         return True
+
 
 admin.site.register(Team, TeamAdmin)
 admin.site.register(Stadium, StadiumAdmin)
 admin.site.register(Player, PlayerAdmin)
-

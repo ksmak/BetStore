@@ -1,19 +1,25 @@
-# Python
+# Python modules
 from typing import Any
 
-# Django
+# Django modules
 from django.conf import settings
 from django.core.mail import send_mail
 from django.db.models.base import ModelBase
 from django.db.models.signals import post_save, pre_delete
 from django.dispatch import receiver
 
-# Local
+# Project modules
 from .models import Player
 
 
+mail_addresses = [
+    # 'kobit53104@webonoid.com',
+    'ksmakov@gmail.com'
+]
+
+
 @receiver(
-    post_save,
+    signal=post_save,
     sender=Player
 )
 def post_save_player(
@@ -23,20 +29,21 @@ def post_save_player(
     *args: Any,
     **kwargs: Any
 ) -> None:
-    """Post-save Player."""
+    """
+        Сигнал, срабатывающий при сохранении Игрока,
+        при выполнении отправляет сообщение на почту
+    """
     if not created:
         return
 
     send_mail(
-        'Новый свободный агент',
-        'Доступен новый игрок на трансферном рынке',
-        settings.EMAIL_HOST_USER,
-        [
-            'kobit53104@webonoid.com',
-            'ksmakov@gmail.com'
-        ],
+        subject='Новый свободный агент',
+        message='Доступен новый игрок на трансферном рынке',
+        from_email=settings.EMAIL_HOST_USER,
+        recipient_list=mail_addresses,
         fail_silently=False
     )
+
 
 @receiver(
     pre_delete,
@@ -48,14 +55,17 @@ def post_delete_player(
     *args: Any,
     **kwargs: Any
 ) -> None:
-    """Post-delete Player."""
+    """
+        Сигнал, срабатывающий при удалении Игрока.
+        При выполнении отправляет сообщение на почту
+    """
     send_mail(
-        'Игрок завершил карьеру',
-        f'Игрок {instance.surname} {instance.name} завершил карьеру\nкоманда игрока {instance.team.title}',
-        settings.EMAIL_HOST_USER,
-        [
-            'kobit53104@webonoid.com',
-            'ksmakov@gmail.com'
-        ],
+        subject='Игрок завершил карьеру',
+        message=(
+            f'Игрок {instance.surname} {instance.name} завершил карьеру\n'
+            f'команда игрока {instance.team.title}'
+        ),
+        from_email=settings.EMAIL_HOST_USER,
+        recipient_list=mail_addresses,
         fail_silently=False
     )

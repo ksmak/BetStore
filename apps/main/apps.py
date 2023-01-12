@@ -6,5 +6,6 @@ class MainConfig(AppConfig):
     name = 'main'
 
     def ready(self) -> None:
+        """ Метод для регистрации сигналов """
         # First party
         import main.signals

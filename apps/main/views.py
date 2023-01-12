@@ -1,13 +1,12 @@
-# Django
+# Django modules
 from django.http.request import HttpRequest
 from django.shortcuts import (
     HttpResponse,
     render
 )
 
-#Third-party
+# Third-party modules
 from auths.models import Client
-
 
 
 def simple(request: HttpRequest) -> HttpResponse:
@@ -33,6 +32,7 @@ def index(request: HttpRequest) -> HttpRequest:
         template_name='main/index.html',
         context=ctx_data
     )
+
 
 def get_all_users_view(request: HttpRequest) -> HttpResponse:
     """users view"""

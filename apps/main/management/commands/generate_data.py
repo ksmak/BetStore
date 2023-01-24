@@ -62,7 +62,7 @@ class Command(BaseCommand):
     def generate_teams_and_stadiums(self) -> None:
 
         def generate_stadium_title(code: str) -> str:
-            if isinstance(code, None):
+            if isinstance(code, tuple):
                 return f'Some Stadium'
             return f'{code} Stadium'
 
@@ -124,7 +124,7 @@ class Command(BaseCommand):
         """Handles data filling."""
 
         start: datetime = datetime.now()
-        #self.generate_players()
+        self.generate_players()
         self.generate_teams_and_stadiums()
         print(
             f'Generated in: {(datetime.now()-start).total_seconds()} seconds'

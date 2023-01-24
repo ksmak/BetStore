@@ -1,25 +1,25 @@
-from django.db import models
+# Django
+from django.contrib.auth.base_user import BaseUserManager
 from django.contrib.auth.models import (
     AbstractBaseUser,
-    PermissionsMixin,
-    BaseUserManager
+    PermissionsMixin
 )
 from django.core.exceptions import ValidationError
+from django.db import models
 from django.utils import timezone
-
-from django.contrib.auth.hashers import make_password
 
 
 class ClientManager(BaseUserManager):
-    """Base client manager class"""
+    """ClientManager."""
 
     def create_user(
         self,
         email: str,
         password: str
     ) -> 'Client':
+
         if not email:
-            raise ValidationError("Email is none")
+            raise ValidationError('Email required')
 
         client: 'Client' = self.model(
             email=self.normalize_email(email),
@@ -34,8 +34,6 @@ class ClientManager(BaseUserManager):
         email: str,
         password: str
     ) -> 'Client':
-        if not email:
-            raise ValidationError("Email is none")
 
         client: 'Client' = self.model(
             email=self.normalize_email(email),
@@ -48,50 +46,42 @@ class ClientManager(BaseUserManager):
         return client
 
 
-
 class Client(AbstractBaseUser, PermissionsMixin):
-    """My custom user."""
+    """Client."""
 
-    email = models.EmailField(max_length=100,
-     unique=True,
-     verbose_name='почта'
+    email = models.EmailField(
+        max_length=100,
+        unique=True,
+        verbose_name='почта'
     )
-    
     is_active = models.BooleanField(
-        default=True, verbose_name='активность'
+        default=True,
+        verbose_name='активность'
     )
-
     is_superuser = models.BooleanField(
         default=False,
         verbose_name='администратор'
     )
-
     is_staff = models.BooleanField(
         default=False,
         verbose_name='менеджер'
     )
-
     date_joined = models.DateTimeField(
         default=timezone.now,
         verbose_name='дата регистрации'
     )
-
     balance = models.FloatField(
-        default=0.0, verbose_name='баланс'
+        default=0.0,
+        verbose_name='баланс'
     )
-    
-    bd_day = models.DateTimeField(
-        default=timezone.now,
-        verbose_name='появился на свет'
-    )
-
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = []
-    object = ClientManager()
+
+    objects = ClientManager()
 
     class Meta:
         ordering = (
             '-date_joined',
         )
-        verbose_name = "клиент"
-        verbose_name_plural = "клиенты"
+        verbose_name = 'клиент'
+        verbose_name_plural = 'клиенты'

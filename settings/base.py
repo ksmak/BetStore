@@ -30,13 +30,15 @@ DJANGO_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django_extensions',
-    'debug_toolbar'
+    'debug_toolbar',
 ]
+
 PROJECT_APPS = [
     'main.apps.MainConfig',
     'auths.apps.AuthsConfig',
-    
+    'abstracts.apps.AbstractsConfig',
 ]
+
 INSTALLED_APPS = DJANGO_APPS + PROJECT_APPS
 
 AUTH_USER_MODEL = 'auths.Client'
@@ -80,11 +82,10 @@ AUTH_PASSWORD_VALIDATORS = [
     {'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator'},  # noqa
     {'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator'}  # noqa
 ]
-LANGUAGE_CODE = 'en-us'
+LANGUAGE_CODE = 'ru'
 TIME_ZONE = 'UTC'
 USE_I18N = True
 USE_TZ = True
-
 # ------------------------------------------------
 # Debug-toolbar
 #
@@ -106,7 +107,6 @@ DEBUG_TOOLBAR_PANELS = [
     'debug_toolbar.panels.redirects.RedirectsPanel',
 ]
 DEBUG_TOOLBAR_PATCH_SETTINGS = False
-
 # ------------------------------------------------
 # Shell-plus
 #
@@ -126,11 +126,18 @@ SHELL_PLUS_MODEL_ALIASES = {
 SHELL_PLUS = 'ipython'
 SHELL_PLUS_PRINT_SQL = False
 SHELL_PLUS_PRINT_SQL_TRUNCATE = 1000
-
+# -------------------------------------------------
 # Email
+# 
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_USE_TLS = True
 EMAIL_HOST = config('EMAIL_HOST', cast=str)
 EMAIL_HOST_USER = config('EMAIL_HOST_USER', cast=str)
 EMAIL_HOST_PASSWORD = config('EMAIL_HOST_PASSWORD', cast=str)
 EMAIL_PORT = 587
+EMAIL_SEND_ADDR = config('EMAIL_SEND_ADDR', cast=str)
+# --------------------------------------------------
+# Celery
+# 
+CELERY_BROKER_URL = 'redis://localhost:6379'
+CELERY_RESULT_BACKEND = 'redis://localhost:6379'

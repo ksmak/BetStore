@@ -5,11 +5,18 @@ from typing import Any
 from django.conf import settings
 from django.core.mail import send_mail
 from django.db.models.base import ModelBase
-from django.db.models.signals import post_save, pre_delete
+from django.db.models.signals import (
+    post_delete,
+    post_save
+)
 from django.dispatch import receiver
+
+# First party
+from abstracts.utils import get_eta_time
 
 # Local
 from .models import Player
+from .tasks import notify
 
 
 @receiver(
@@ -20,42 +27,39 @@ def post_save_player(
     sender: ModelBase,
     instance: Player,
     created: bool,
-    *args: Any,
     **kwargs: Any
 ) -> None:
     """Post-save Player."""
-    if not created:
+    if created:
+        notify.apply_async(
+            args=('Created', instance.fullname, str(instance)),
+            eta=get_eta_time(10)
+        )
         return
 
-    send_mail(
-        'Новый свободный агент',
-        'Доступен новый игрок на трансферном рынке',
-        settings.EMAIL_HOST_USER,
-        [
-            'kobit53104@webonoid.com',
-            'ksmakov@gmail.com'
-        ],
-        fail_silently=False
-    )
+    if instance.status == Player.STATUS_FREE_AGENT:
+        notify.apply_async(
+            args=('FreeAgent', instance.fullname, str(instance)),
+            eta=get_eta_time(10)
+        )
+        return
+
+    if instance.status == Player.STATUS_RETIRED:
+        notify.apply_async(
+            args=('Retired', instance.fullname, str(instance)),
+            eta=get_eta_time(10)
+        )
+        return
+
 
 @receiver(
-    pre_delete,
+    post_delete,
     sender=Player
 )
 def post_delete_player(
     sender: ModelBase,
     instance: Player,
-    *args: Any,
     **kwargs: Any
 ) -> None:
     """Post-delete Player."""
-    send_mail(
-        'Игрок завершил карьеру',
-        f'Игрок {instance.surname} {instance.name} завершил карьеру\nкоманда игрока {instance.team.title}',
-        settings.EMAIL_HOST_USER,
-        [
-            'kobit53104@webonoid.com',
-            'ksmakov@gmail.com'
-        ],
-        fail_silently=False
-    )
+    pass

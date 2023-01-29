@@ -53,6 +53,7 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'debug_toolbar.middleware.DebugToolbarMiddleware'
 ]
+
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
@@ -134,7 +135,7 @@ EMAIL_USE_TLS = True
 EMAIL_HOST = config('EMAIL_HOST', cast=str)
 EMAIL_HOST_USER = config('EMAIL_HOST_USER', cast=str)
 EMAIL_HOST_PASSWORD = config('EMAIL_HOST_PASSWORD', cast=str)
-EMAIL_PORT = 587
+EMAIL_PORT = config('EMAIL_PORT', cast=int)
 EMAIL_SEND_ADDR = config('EMAIL_SEND_ADDR', cast=str)
 # --------------------------------------------------
 # Celery

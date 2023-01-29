@@ -56,7 +56,8 @@ class Command(BaseCommand):
                 age=random.randrange(
                     MIN_AGE,
                     MAX_AGE
-                )
+                ),
+                email = 'jegiben516@fsouda.com'   
             )
 
     def generate_teams_and_stadiums(self) -> None:

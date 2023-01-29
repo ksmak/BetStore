@@ -16,7 +16,9 @@ from abstracts.utils import get_eta_time
 
 # Local
 from .models import Player
-from .tasks import notify
+from .tasks import (
+    notify,
+)
 
 
 @receiver(
@@ -35,6 +37,7 @@ def post_save_player(
             args=('Created', instance.fullname, str(instance)),
             eta=get_eta_time(10)
         )
+
         return
 
     if instance.status == Player.STATUS_FREE_AGENT:

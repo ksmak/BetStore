@@ -1,13 +1,23 @@
+# Future
+from __future__ import annotations
+
+# Python
+from typing import Any
+
 # Django
+from django.core.handlers.wsgi import WSGIRequest
+from django.db.models.query import QuerySet
+from django.http import HttpResponse
 from django.http.request import HttpRequest
-from django.shortcuts import (
-    HttpResponse,
-    render
+from django.shortcuts import HttpResponse
+from django.template import (
+    backends,
+    loader
 )
+from django.views import View
 
-#Third-party
-from auths.models import Client
-
+# Local
+from .models import Event
 
 
 def simple(request: HttpRequest) -> HttpResponse:
@@ -16,26 +26,35 @@ def simple(request: HttpRequest) -> HttpResponse:
     )
 
 
-def index(request: HttpRequest) -> HttpRequest:
-    """index view."""
+class IndexView(View):
+    """IndexView."""
 
-    numbers: list[int] = []
-    i: int
-    for i in range(1, 11):
-        numbers.append(i)
+    queryset: QuerySet = \
+        Event.objects.all()
+    
+    template_name: str = 'main/index.html'
 
-    ctx_data: dict[str, str | list[int]] = {
-        'ctx_title': 'Заголовок главной страницы',
-        'ctx_numbers': numbers
-    }
-    return render(
-        request,
-        template_name='main/index.html',
-        context=ctx_data
-    )
+    def get(
+        self,
+        request: WSGIRequest,
+        *args: Any,
+        **kwargs: Any
+    ) -> HttpResponse:
+        """GET request handler."""
 
-def get_all_users_view(request: HttpRequest) -> HttpResponse:
-    """users view"""
+        ctx_data: dict[str, str | list[int]] = {
+            'ctx_title': 'Заголовок главной страницы',
+            'ctx_events': self.queryset
+        }
 
-    print(Client.objects.all())
-    return HttpResponse('ok')
+        template: backends.django.Template =\
+            loader.get_template(
+                self.template_name
+            )
+        return HttpResponse(
+            template.render(
+                ctx_data,
+                request
+            ),
+            content_type='text/html'
+        )

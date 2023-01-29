@@ -16,6 +16,7 @@ app: Celery = Celery(
     'settings',
     broker=settings.CELERY_BROKER_URL,
     include=(
+        'auths.tasks',
         'main.tasks',
     )
 )
@@ -28,7 +29,7 @@ app.autodiscover_tasks(
 app.conf.beat_schedule = {
     'every-1-minute-every-day': {
         'task': 'change_player_age',
-        'schedule': crontab(minute='*/1')
+        'schedule': crontab(minute='*/10')
     }
 }
 app.conf.timezone = 'UTC'

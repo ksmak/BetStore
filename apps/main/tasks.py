@@ -31,28 +31,28 @@ def change_player_age(*args: Any) -> None:
 
 @app.task
 def notify(*args: Any) -> None:
-    if args[0] == 'Created':
-        send_mail(
-            f'Новый игрок: {args[1]}',
-            f'Доступен новый игрок на трансферном рынке: {args[2]}',
-            settings.EMAIL_HOST_USER,
-            [settings.EMAIL_SEND_ADDR],
-            fail_silently=False
-        )
-    elif args[0] == 'FreeAgent':
-        send_mail(
-            f'Свободный агент: {args[1]}',
-            f'Доступен игрок на трансферном рынке: {args[2]}',
-            settings.EMAIL_HOST_USER,
-            [settings.EMAIL_SEND_ADDR],
-            fail_silently=False
-        )
-    elif args[0] == 'Retired':
-        send_mail(
-            f'Завершил карьеру: {args[1]}',
-            f'Игрок завершил карьеру: {args[2]}',
-            settings.EMAIL_HOST_USER,
-            [settings.EMAIL_SEND_ADDR],
-            fail_silently=False
-        )
+    # if args[0] == 'Created':
+    #     send_mail(
+    #         f'Новый игрок: {args[1]}',
+    #         f'Доступен новый игрок на трансферном рынке: {args[2]}',
+    #         settings.EMAIL_HOST_USER,
+    #         [settings.EMAIL_SEND_ADDR],
+    #         fail_silently=False
+    #     )
+    # elif args[0] == 'FreeAgent':
+    #     send_mail(
+    #         f'Свободный агент: {args[1]}',
+    #         f'Доступен игрок на трансферном рынке: {args[2]}',
+    #         settings.EMAIL_HOST_USER,
+    #         [settings.EMAIL_SEND_ADDR],
+    #         fail_silently=False
+    #     )
+    # elif args[0] == 'Retired':
+    #     send_mail(
+    #         f'Завершил карьеру: {args[1]}',
+    #         f'Игрок завершил карьеру: {args[2]}',
+    #         settings.EMAIL_HOST_USER,
+    #         [settings.EMAIL_SEND_ADDR],
+    #         fail_silently=False
+    #     )
     print('CALLED: NOTIFY')

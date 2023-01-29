@@ -3,16 +3,14 @@ from __future__ import annotations
 
 # Python
 from typing import Any
-from datetime import (
-    datetime,
-    timedelta
-)
+from functools import cached_property
 
 # Django
 from django.core.exceptions import ValidationError
 from django.db import models
 from django.db.models.query import QuerySet
 
+from auths.models import Client
 
 class Stadium(models.Model):
     """Stadium."""
@@ -85,6 +83,7 @@ class PlayerManager(models.QuerySet):
 
 
 class Player(models.Model):
+
     """Player."""
 
     ADULT_TEAM_MIN_AGE: int = 17
@@ -175,3 +174,104 @@ class Player(models.Model):
     def retire(self) -> None:
         self.status = self.STATUS_RETIRED
         self.save(update_fields=('status',))
+
+
+class Result(models.Model):
+    """Result."""
+
+    won_team_id: int = models.PositiveSmallIntegerField(
+        default=0,
+        verbose_name='кто выйграл'
+    )
+
+    class Meta:
+        ordering = ('-id',)
+        verbose_name = 'результат'
+        verbose_name_plural = 'результаты'
+
+    def __str__(self) -> str:
+        return f'Выграла команда с ID: {self.won_team_id}'
+
+
+class Event(models.Model):
+    """Event."""
+
+    STATUS_FUTURE: int = 0
+    STATUS_ONGOING: int = 1
+    STATUS_PAST: int = 2
+    STATUSES: tuple[tuple[int, str], ...] = (
+        (STATUS_FUTURE, 'Состоится'),
+        (STATUS_ONGOING, 'В процессе'),
+        (STATUS_PAST, 'Состоялось')
+    )
+    status: int = models.PositiveSmallIntegerField(
+        choices=STATUSES,
+        default=STATUS_FUTURE,
+        verbose_name='статус'
+    )
+    team_1: Team = models.ForeignKey(
+        Team,
+        on_delete=models.RESTRICT,
+        related_name='team_1',
+        verbose_name='команда 1'
+    )
+    team_2: Team = models.ForeignKey(
+        Team,
+        on_delete=models.RESTRICT,
+        related_name='team_2',
+        verbose_name='команда 2'
+    )
+    result: Result = models.OneToOneField(
+        Result,
+        on_delete=models.CASCADE,
+        null=True,
+        blank=True,
+        verbose_name='результат'
+    )
+
+    class Meta:
+        ordering = ('-id',)
+        verbose_name = 'событие'
+        verbose_name_plural = 'события'
+
+    def __str__(self) -> str:
+        return (
+            f'{self.get_status_display()} | '
+            f'{self.team_1.title} VS '
+            f'{self.team_2.title}'
+        )
+
+    @cached_property
+    def who_won(self) -> Team:
+        if self.result.won_team_id == self.team_1.id:
+            return self.team_1
+        return self.team_2
+
+
+class Bet(models.Model):
+    """Bet."""
+
+    client: Client = models.ForeignKey(
+        Client,
+        on_delete=models.RESTRICT,
+        verbose_name='клиент'
+    )
+    event: Event = models.ForeignKey(
+        Event,
+        on_delete=models.RESTRICT,
+        verbose_name='событие'
+    )
+    amount: int = models.PositiveIntegerField(
+        verbose_name='сумма'
+    )
+    chosen_team_id: int = models.PositiveSmallIntegerField(
+        verbose_name='выбранная команда'
+    )
+
+    class Meta:
+        ordering = ('-id',)
+        verbose_name = 'ставка'
+        verbose_name_plural = 'ставки'
+
+    def __str__(self) -> str:
+        return f'{self.client.email} | {self.amount}'

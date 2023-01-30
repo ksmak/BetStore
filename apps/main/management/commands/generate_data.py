@@ -17,6 +17,8 @@ from main.models import (
     Stadium,
     Team
 )
+from main.tasks import create_event
+from abstracts.utils import get_eta_time
 
 
 class Command(BaseCommand):
@@ -121,12 +123,18 @@ class Command(BaseCommand):
                     stadium=stadium
                 )
 
+    def generate_task(self):
+        create_event.apply_async(
+            eta=get_eta_time(10)
+        )
+
     def handle(self, *args: Any, **kwargs: Any) -> None:
         """Handles data filling."""
 
         start: datetime = datetime.now()
-        self.generate_players()
-        self.generate_teams_and_stadiums()
+        # self.generate_players()
+        # self.generate_teams_and_stadiums()
+        self.generate_task()
         print(
             f'Generated in: {(datetime.now()-start).total_seconds()} seconds'
         )

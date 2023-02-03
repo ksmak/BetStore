@@ -1,6 +1,3 @@
-<<<<<<< HEAD
-# Django modules
-=======
 # Future
 from __future__ import annotations
 
@@ -11,7 +8,6 @@ from typing import Any
 from django.core.handlers.wsgi import WSGIRequest
 from django.db.models.query import QuerySet
 from django.http import HttpResponse
->>>>>>> e664215b0d4663ee403b3fff2b41fcf64a55abe4
 from django.http.request import HttpRequest
 from django.shortcuts import HttpResponse
 from django.template import (
@@ -20,19 +16,19 @@ from django.template import (
 )
 from django.views import View
 
-<<<<<<< HEAD
-# Third-party modules
-from auths.models import Client
-
-=======
 # Local
 from .models import Event
->>>>>>> e664215b0d4663ee403b3fff2b41fcf64a55abe4
+
 
 def simple(request: HttpRequest) -> HttpResponse:
     return HttpResponse(
         '<h1>Что нибудь</h1>'
     )
+    # return render(
+    #     request,
+    #     template_name='main/simple.html',
+    #     context={}
+    # )
 
 
 class IndexView(View):
@@ -40,7 +36,6 @@ class IndexView(View):
 
     queryset: QuerySet = \
         Event.objects.all()
-    
     template_name: str = 'main/index.html'
 
     def get(
@@ -51,19 +46,10 @@ class IndexView(View):
     ) -> HttpResponse:
         """GET request handler."""
 
-<<<<<<< HEAD
-
-def get_all_users_view(request: HttpRequest) -> HttpResponse:
-    """users view"""
-
-    print(Client.objects.all())
-    return HttpResponse('ok')
-=======
-        ctx_data: dict[str, str | list[int]] = {
-            'ctx_title': 'Заголовок главной страницы',
+        ctx_data: dict[str, Any] = {
+            'ctx_title': '(4) Ставки на спорт!',
             'ctx_events': self.queryset
         }
-
         template: backends.django.Template =\
             loader.get_template(
                 self.template_name
@@ -75,4 +61,3 @@ def get_all_users_view(request: HttpRequest) -> HttpResponse:
             ),
             content_type='text/html'
         )
->>>>>>> e664215b0d4663ee403b3fff2b41fcf64a55abe4

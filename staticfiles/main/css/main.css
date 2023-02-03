@@ -1,0 +1,33 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+body {
+    display: flex;
+    height: 100vh;
+    justify-content: center;
+    align-items: center;
+    background-color: #002B36;
+    flex-direction: column;
+}
+.btn {
+    width: 240px;
+    height: 130px;
+    border: none;
+    box-shadow: 0 0 15px white, 0 0 30px white, 0 0 45px aqua, 0 0 60px aqua;
+}
+.block2 {
+    margin-top: 2em;
+}
+.content {
+    height: 130px;
+    width: 0px;
+    background-color: white;
+    float: right;
+    transition: width 0.4s;
+}
+.btn:hover .content {
+    float: left;
+    width: 240px;
+}

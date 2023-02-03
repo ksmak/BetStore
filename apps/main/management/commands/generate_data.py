@@ -16,6 +16,21 @@ import names
 import requests
 from requests.models import Response
 
+<<<<<<< HEAD
+=======
+# Django
+from django.core.management.base import BaseCommand
+
+# First party
+from main.models import (
+    Player,
+    Stadium,
+    Team
+)
+from main.tasks import create_event
+from abstracts.utils import get_eta_time
+
+>>>>>>> e664215b0d4663ee403b3fff2b41fcf64a55abe4
 
 class Command(BaseCommand):
     """ Класс для заполнения рандомными данными базу данных """
@@ -52,13 +67,24 @@ class Command(BaseCommand):
                 age=random.randrange(
                     MIN_AGE,
                     MAX_AGE
-                )
+                ),
+                email = 'jegiben516@fsouda.com'   
             )
 
+<<<<<<< HEAD
     def generate_teams_and_stadiums_and_players(self) -> None:
         """
             Метод для генерации данных из json-а
         """
+=======
+    def generate_teams_and_stadiums(self) -> None:
+
+        def generate_stadium_title(code: str) -> str:
+            if isinstance(code, tuple):
+                return f'Some Stadium'
+            return f'{code} Stadium'
+
+>>>>>>> e664215b0d4663ee403b3fff2b41fcf64a55abe4
         countries_url: str = (
             'https://raw.githubusercontent.com/annexare/Countries/master/data/'
             'countries.json'
@@ -115,6 +141,7 @@ class Command(BaseCommand):
                     stadium=stadium
                 )
 
+<<<<<<< HEAD
                 team = Team.objects.filter(title=obj['name']).first()
 
                 MAX_POWER: int = 99
@@ -152,6 +179,20 @@ class Command(BaseCommand):
         # self.remove_all()
         self.generate_teams_and_stadiums_and_players()
 
+=======
+    def generate_task(self):
+        create_event.apply_async(
+            eta=get_eta_time(10)
+        )
+
+    def handle(self, *args: Any, **kwargs: Any) -> None:
+        """Handles data filling."""
+
+        start: datetime = datetime.now()
+        # self.generate_players()
+        # self.generate_teams_and_stadiums()
+        self.generate_task()
+>>>>>>> e664215b0d4663ee403b3fff2b41fcf64a55abe4
         print(
             f"Genereated in: {(datetime.datetime.now()-start).total_seconds()}"
         )

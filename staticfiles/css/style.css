@@ -1,0 +1,153 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Work Sans', sans-serif;
+    background-color: rgba(0, 98, 255, 0.584);
+}
+
+header {
+    height: 10%;
+    width: 100vw;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.header__controller {
+    height: 95%;
+    width: 90%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+.logo {
+    width: 40px;
+    height: 40px;
+    background-image: url('https://cdn-icons-png.flaticon.com/512/3621/3621789.png');
+    background-size: 100% 100%;
+}
+header .title {
+    text-transform: uppercase;
+    font-size: 2em;
+    letter-spacing: 3px;
+}
+nav .nav {
+    display: flex;
+    gap: 30px;
+}
+.link {
+    list-style: none;
+    font-size: 1.4em;
+}
+.link a {
+    text-decoration: none;
+    color: black;
+}
+.link a:hover {
+    color: gold;
+}
+
+
+main {
+    display: flex;
+    height: 95vh;
+    padding: 10px;
+    justify-content: space-around;
+    margin-top: 60px;
+}
+
+.bits {
+    display: flex;
+    flex-direction: column;
+    height: 80%;
+    width: 30%;
+    background-color: rgba(0, 98, 255, 0.284);
+    box-shadow: 0 0 15px rgba(0, 98, 255, 0.984) inset;
+    border-radius: 10px;
+}
+.bit {
+    height: 50%;
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+}
+.bit:nth-child(odd) {
+    border-bottom: 2px solid black;
+}
+.team {
+    font-size: 2.1em;
+    font-weight: bold;
+}
+.text {
+    font-size: 1em;
+    font-style: italic;
+}
+.sign__up__form {
+    display: flex;
+    flex-direction: column;
+    height: 40%;
+    width: 30%;
+    border: 1px solid black;
+
+    
+    justify-content: center;
+    align-items: center;
+    border-radius: 10px;
+    position: relative;
+
+}
+.sign__up__form a {
+    text-decoration: none;
+    text-transform: uppercase;
+    font-weight: bold;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 3em;
+    color: black;
+
+    transition: all 0.3s;
+}
+
+.sign__up__form form {
+    display: flex;
+    width: 90%;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    position: absolute;
+
+    transition: all 0.3s;
+
+}
+.disactive {
+    opacity: 0;
+    visibility: hidden;
+}
+form input {
+    width: 100%;
+    height: 45px;
+}
+input[type="submit"] {
+    text-decoration: none;
+    text-transform: uppercase;
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2em;
+    color: black;
+}
+.players {
+    display: flex;
+    flex-direction: column;
+    height: 40%;
+    width: 30%;
+}

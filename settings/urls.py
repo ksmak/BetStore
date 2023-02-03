@@ -7,19 +7,16 @@ from django.urls import (
 )
 
 # First party
-from main.views import (
-    index,
-    simple,
-    get_all_users_view
-)
+from main.views import simple
 
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('simple', simple),
-    path('', index),
-    path('users/', get_all_users_view)
+    path('simple/', simple),
+    path('', include('main.urls')),
 ]
+                     
+
 if settings.DEBUG:
     urlpatterns += [
         path('__debug__/', include('debug_toolbar.urls')),

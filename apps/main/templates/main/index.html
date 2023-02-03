@@ -2,22 +2,71 @@
 
 <!DOCTYPE html>
 <html lang="en">
-    <head>
-        <meta charset="UTF-8">
-        <meta http-equiv="X-UA-Compatible" content="IE=edge">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>{{ ctx_title }}</title>
-        <link type="text/css" rel="stylesheet" href="{% static 'css/main.css' %}"/>
-    </head>
-    <body>
-        <div class="btn">
-            <div class="content">
-            </div>
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{% static 'main/css/style.css' %}">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Work+Sans:wght@300&display=swap" rel="stylesheet">
+    <title>{{ ctx_title }}</title>
+</head>
+<body>
+    <header>
+        <div class="header__controller">
+            <div class="logo"></div>
+            <div class="title">Site name</div>
+            <nav>
+                <ul class="nav">
+                    <li class="link">
+                        <a href="#">Home</a>
+                    </li>
+                    <li class="link">
+                        <a href="#">Bits</a>
+                    </li>
+                    <li class="link">
+                        <a href="#">About</a>
+                    </li>
+                    <li class="link">
+                        <a href="#">Other</a>
+                    </li>
+                </ul>
+            </nav>
         </div>
-        <div class="block2">
-            {% for number in ctx_numbers %}
-                <h2>Число: {{ number }}</h2>
+    </header>
+    <main>
+        <div class="bits">
+            {% for event in ctx_events %}
+                <div class="bit">
+                    <div class="team">
+                        {{ event.team_1 }}
+                    </div>
+                    <div class="text">
+                        1 - 2
+                    </div>
+                    <div class="team">
+                        {{ event.team_2 }}
+                    </div>
+                </div>
             {% endfor %}
         </div>
-    </body>
+        <div class="sign__up__form">
+            <form action="#" class="disactive">
+                <input type="text">
+                <input type="text">
+                <input type="text">
+                <input type="submit" value="Sign up">
+            </form>
+            <a href="/register">
+                Sign up
+            </a>
+        </div>
+        <div class="players">
+        </div>
+    </main>
+    <footer>
+    </footer>
+    <script src="{% static 'main/js/app.js' %}"></script>
+</body>
 </html>

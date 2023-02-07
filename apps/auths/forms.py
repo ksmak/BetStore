@@ -36,6 +36,7 @@ class ClientForm(forms.ModelForm):
     ERROR_PASSWORD_INVALID = 'Password is invalid'
     ERROR_PASSWORD_TOO_LONG = "Password is too long"
     ERROR_PASSWORD_TOO_SHORT = "Password is too short"
+    ERROR_PASSWORD_NOT_SAME = "Passwords is not same"
 
     EMAIL_MIN_LENGTH = 10
     EMAIL_MAX_LENGTH = 50
@@ -50,9 +51,15 @@ class ClientForm(forms.ModelForm):
     email = forms.EmailField(
         label='Почта'
     )
+
     password = forms.CharField(
         widget=forms.PasswordInput,
         label='Пароль'
+    )
+
+    password2 = forms.CharField(
+        widget=forms.PasswordInput,
+        label='Повторите пароль'
     )
 
     class Meta:
@@ -67,9 +74,15 @@ class ClientForm(forms.ModelForm):
         
         email: str = self.cleaned_data['email']
         password: str = self.cleaned_data['password']
+        password2: str = self.cleaned_data['password2']
 
         password = password.lower()
-                
+        password2 = password2.lower()
+
+        # 0
+        if password != password2:
+            raise ValidationError(self.ERROR_PASSWORD_NOT_SAME)
+                        
         # 1
         email_parts: list[str] = email.split('@')
         if not (len(email_parts) == 2 and email_parts[1] in Client.EMAIL_SERVICES):
@@ -87,7 +100,7 @@ class ClientForm(forms.ModelForm):
             raise ValidationError(self.ERROR_EMAIL_INVALID)
         
         count = 0
-        for s in email_parts[1]:
+        for s in email_parts[0]:
             if s in self.DIGITS:
                 count += 1
                 if count > 1:

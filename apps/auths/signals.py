@@ -31,8 +31,8 @@ def post_save_client(
     **kwargs: Any
 ) -> None:
     """Post-save Client."""
-    if created:
-        send_report_for_new_players.apply_async(
-            args=(instance.email, ),
-            eta=get_eta_time(days=30)
-        )
+    # if created:
+        # send_report_for_new_players.apply_async(
+        #     args=(instance.email, ),
+        #     eta=get_eta_time(days=30)
+        # )

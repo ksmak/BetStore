@@ -35,6 +35,12 @@
             </nav>
         </div>
     </header>
+    {% if request.user %}
+        <p class="user_info">
+            {{request.user}}
+        </p>
+    {% endif %}
+    </section>
     <main>
         <div class="bits">
             {% for event in ctx_events %}
@@ -52,18 +58,14 @@
             {% endfor %}
         </div>
         <div class="sign__up__form">
-            <form action="" class="disactive" method="post">
+            <form class="disactive" method="post">
                 {% csrf_token %}
                 <input type="text" name="email" placeholder="Enter email">
-                <div>
-                    {{ctx_form.errors.email}}
-                </div>
                 <input type="password" name="password" placeholder="Enter password">
-                <input type="password" name="password2" placeholder="Repeat password">
-                <input type="submit" value="Sign up">
                 <div>
-                    {{ctx_form.errors}}
+                    {{ ctx_form.non_field_errors }}
                 </div>
+                <input type="submit" value="Sign up">
             </form>
             <a href="/register">
                 Sign up

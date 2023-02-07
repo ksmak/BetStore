@@ -48,7 +48,19 @@ class ClientManager(BaseUserManager):
 
 class Client(AbstractBaseUser, PermissionsMixin):
     """Client."""
+    EMAIL_SERVICES = (
+        'gmail.com',
+        'mail.ru',
+        'yahoo.com',
+        'outlook.com'
+    )
 
+    EMAIL_LENGTH_MIN = 10
+    EMAIL_LENGTH_MAX = 50
+
+    PASSWORD_LENGTH_MIN = 12
+    PASSWORD_LENGTH_MAX = 24
+    
     email = models.EmailField(
         max_length=100,
         unique=True,

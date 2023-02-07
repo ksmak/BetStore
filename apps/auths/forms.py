@@ -4,6 +4,8 @@ from django.contrib.auth.forms import (
     UserChangeForm,
     UserCreationForm
 )
+from django.core.exceptions import ValidationError
+from django.conf import settings
 
 # Local
 from auths.models import Client
@@ -42,3 +44,14 @@ class ClientForm(forms.ModelForm):
             'email',
             'password',
         )
+
+    def clean(self) -> None:
+        email: str = self.cleaned_data['email']
+                
+        # 1
+        email_parts: list[str] = email.split('@')
+        if len(email_parts) == 2 and email_parts[1] in Client.EMAIL_SERVICES:
+            pass
+        else:
+            self.add_error('email', ValidationError(settings.ERROR_EMAIL_INVALID))
+        

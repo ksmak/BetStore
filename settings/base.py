@@ -142,3 +142,6 @@ EMAIL_SEND_ADDR = config('EMAIL_SEND_ADDR', cast=str)
 # 
 CELERY_BROKER_URL = 'redis://localhost:6379'
 CELERY_RESULT_BACKEND = 'redis://localhost:6379'
+# --------------------------------------------------
+# Error message
+ERROR_EMAIL_INVALID='Clien email invalid'

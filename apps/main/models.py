@@ -4,6 +4,7 @@ from __future__ import annotations
 # Python
 from typing import Any
 from functools import cached_property
+import math
 
 # Django
 from django.core.exceptions import ValidationError
@@ -16,6 +17,7 @@ from auths.models import Client
 
 class Team(models.Model):
     """Team."""
+    MAX_PLAYERS = 11
 
     title = models.CharField(
         verbose_name='название',
@@ -38,6 +40,14 @@ class Team(models.Model):
 
     def __str__(self) -> str:
         return self.title
+    
+    @cached_property
+    def power(self) -> int | float:
+        total: int | float = 0
+        player: Player
+        for player in self.players.all():
+            total += player.power
+        return math.ceil(total / self.MAX_PLAYERS)
 
 
 class PlayerManager(models.Manager):
@@ -70,11 +80,13 @@ class PlayerManager(models.Manager):
 class Player(models.Model):
     """Player."""
 
-    FREE_AGENT: int = 0
-    TEAM_MEMBER: int = 1
+    STATUS_FREE_AGENT: int = 0
+    STATUS_TEAM_MEMBER: int = 1
+    STATUS_RETIRED: int = 2
     PLAYER_STATUSES: tuple[tuple[int, str], ...] = (
-        (FREE_AGENT, 'Свободный агент'),
-        (TEAM_MEMBER, 'Состоит в команде')
+        (STATUS_FREE_AGENT, 'Свободный агент'),
+        (STATUS_TEAM_MEMBER, 'Состоит в команде'),
+        (STATUS_RETIRED, 'Завершил карьеру'),
     )
 
     MIN_AGE_FOR_ADULT_TEAM: int = 17
@@ -83,7 +95,7 @@ class Player(models.Model):
 
     status = models.SmallIntegerField(
         choices=PLAYER_STATUSES,
-        default=FREE_AGENT,
+        default=STATUS_FREE_AGENT,
         verbose_name='статус'
     )
 
@@ -113,6 +125,7 @@ class Player(models.Model):
         related_name='players',
         verbose_name='команда'
     )
+
     objects = PlayerManager()
 
     class Meta:
@@ -153,6 +166,18 @@ class Player(models.Model):
         #     update_fields=('status',)
         # )
         super().delete(*args, **kwargs)
+    
+    @property
+    def fullname(self) -> str:
+        return f'{self.name} {self.surname}'
+
+    def free(self) -> None:
+        self.status = self.STATUS_FREE_AGENT
+        self.save(update_fields=('status',))
+
+    def retire(self) -> None:
+        self.status = self.STATUS_RETIRED
+        self.save(update_fields=('status',))
 
 
 class Stadium(models.Model):
@@ -268,14 +293,17 @@ class Bet(models.Model):
         on_delete=models.RESTRICT,
         verbose_name='клиент'
     )
+
     event: Event = models.ForeignKey(
         Event,
         on_delete=models.RESTRICT,
         verbose_name='событие'
     )
+
     amount: int = models.PositiveIntegerField(
         verbose_name='сумма'
     )
+
     chosen_team_id: int = models.PositiveSmallIntegerField(
         verbose_name='выбранная команда'
     )

@@ -2,8 +2,8 @@
 from typing import Any
 
 # Django
-from django.conf import settings
-from django.core.mail import send_mail
+# from django.conf import settings
+# from django.core.mail import send_mail
 from django.db.models.base import ModelBase
 from django.db.models.signals import (
     post_delete,
@@ -12,13 +12,13 @@ from django.db.models.signals import (
 from django.dispatch import receiver
 
 # First party
-from abstracts.utils import get_eta_time
+# from abstracts.utils import get_eta_time
 
 # Local
 from .models import Player
-from .tasks import (
-    notify,
-)
+# from .tasks import (
+#     notify,
+# )
 
 
 @receiver(
@@ -32,27 +32,28 @@ def post_save_player(
     **kwargs: Any
 ) -> None:
     """Post-save Player."""
-    if created:
-        notify.apply_async(
-            args=('Created', instance.fullname, str(instance)),
-            eta=get_eta_time(10)
-        )
+    pass
+    # if created:
+    #     notify.apply_async(
+    #         args=('Created', instance.fullname, str(instance)),
+    #         eta=get_eta_time(10)
+    #     )
 
-        return
+    #     return
 
-    if instance.status == Player.STATUS_FREE_AGENT:
-        notify.apply_async(
-            args=('FreeAgent', instance.fullname, str(instance)),
-            eta=get_eta_time(10)
-        )
-        return
+    # if instance.status == Player.STATUS_FREE_AGENT:
+    #     notify.apply_async(
+    #         args=('FreeAgent', instance.fullname, str(instance)),
+    #         eta=get_eta_time(10)
+    #     )
+    #     return
 
-    if instance.status == Player.STATUS_RETIRED:
-        notify.apply_async(
-            args=('Retired', instance.fullname, str(instance)),
-            eta=get_eta_time(10)
-        )
-        return
+    # if instance.status == Player.STATUS_RETIRED:
+    #     notify.apply_async(
+    #         args=('Retired', instance.fullname, str(instance)),
+    #         eta=get_eta_time(10)
+    #     )
+    #     return
 
 
 @receiver(

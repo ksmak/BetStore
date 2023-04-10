@@ -1,8 +1,5 @@
 # Django
-from django.urls import (
-    path,
-    re_path
-)
+from django.urls import path
 
 # Local
 from .views import (

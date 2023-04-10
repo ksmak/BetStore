@@ -2,9 +2,9 @@
 from typing import Any
 import random
 # Django
-from django.conf import settings
+# from django.conf import settings
 from django.core.exceptions import ValidationError
-from django.core.mail import send_mail
+# from django.core.mail import send_mail
 
 # First party
 from settings.celery import app
@@ -61,6 +61,7 @@ def notify(*args: Any) -> None:
     #     )
     print('CALLED: NOTIFY')
 
+
 def get_two_teams() -> list[Team, Team]:
     teams = Team.objects.all()
     team_1 = teams[random.randrange(0, len(teams))]
@@ -68,17 +69,18 @@ def get_two_teams() -> list[Team, Team]:
     while team_1 == team_2:
         team_1 = teams[random.randrange(0, len(teams))]
         team_2 = teams[random.randrange(0, len(teams))]
-    
+
     return [team_1, team_2]
 
 
 @app.task
 def create_event(**kwargs: Any):
     team_1, team_2 = get_two_teams()
+
     Event.objects.create(
         status=Event.STATUS_FUTURE,
         team_1=team_1,
-        team_2=team_2   
+        team_2=team_2
     )
 
     print(f'CALLED: Create event {team_1} {team_2}')

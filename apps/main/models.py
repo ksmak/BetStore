@@ -3,6 +3,7 @@ from __future__ import annotations
 
 # Python
 from typing import Any
+import math
 from functools import cached_property
 
 # Django
@@ -11,6 +12,7 @@ from django.db import models
 from django.db.models.query import QuerySet
 
 from auths.models import Client
+
 
 class Stadium(models.Model):
     """Stadium."""
@@ -40,6 +42,8 @@ class Stadium(models.Model):
 
 class Team(models.Model):
     """Team."""
+    
+    MAX_PLAYERS: int = 11
 
     title = models.CharField(
         max_length=25,
@@ -61,6 +65,14 @@ class Team(models.Model):
     def __str__(self) -> str:
         return self.title
 
+    @cached_property
+    def power(self) -> int | float:
+        total: int | float = 0
+        player: Player
+        for player in self.players.all():
+            total += player.power
+        return math.ceil(total / self.MAX_PLAYERS)
+
 
 class PlayerManager(models.QuerySet):
 
@@ -81,11 +93,16 @@ class PlayerManager(models.QuerySet):
             power__lte=Player.ADULT_TEAM_MIN_POWER
         )
 
+    def get_players_with_teams(self) -> QuerySet['Player']:
+        return self.filter(
+            status=Player.STATUS_TEAM_MEMBER
+        ).exclude(
+            team=None
+        )
+
 
 class Player(models.Model):
-
     """Player."""
-
     ADULT_TEAM_MIN_AGE: int = 17
     ADULT_TEAM_MAX_AGE: int = 45
     ADULT_TEAM_MIN_POWER: int = 30
@@ -97,7 +114,6 @@ class Player(models.Model):
         (STATUS_TEAM_MEMBER, 'Состоит в команде'),
         (STATUS_RETIRED, 'Завершил карьеру')
     )
-
     name: str = models.CharField(
         max_length=25,
         verbose_name='имя'
@@ -125,6 +141,7 @@ class Player(models.Model):
         related_name='players',
         verbose_name='команда'
     )
+
     objects = PlayerManager()
 
     class Meta:

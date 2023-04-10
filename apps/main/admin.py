@@ -1,65 +1,67 @@
-from typing import Optional, Any
+# Future
+from __future__ import annotations
+
+# Python
+from typing import Optional
+
+# Django
 from django.contrib import admin
 from django.core.handlers.wsgi import WSGIRequest
 
+# Local
 from .models import (
-    Player,
-    Stadium,
-    Team,
+    Bet,
     Event,
+    Player,
     Result,
-    Bet
+    Stadium,
+    Team
 )
 
 
 class PlayerAdmin(admin.ModelAdmin):
-    """ PlayerAdmin """
+    """PlayerAdmin."""
 
     model = Player
 
-    list_display = (
+    search_fields = (
+        'name',
+        'surname'
+    )
+    readonly_fields = ()
+    list_filter = (
         'status',
+    )
+    list_display = (
         'name',
         'surname',
-        'power'
+        'power',
+        'age'
     )
-
-    readonly_fields = (
-        'status',
-    )
+    ordering = ('-id',)
 
     def get_readonly_fields(
         self,
         request: WSGIRequest,
         obj: Optional[Player] = None
-    ) -> tuple:
+    ) -> tuple[str, ...]:
         """Get readonly fields."""
 
         if not obj:
             return self.readonly_fields
 
         return self.readonly_fields + (
-            'team',
             'name',
             'surname',
             'age'
         )
 
-    def has_add_permission(self, request: WSGIRequest) -> bool:
-        return True
-
-    def has_change_permission(self, request: WSGIRequest, obj: Any = None) -> bool:
-        return True
-
-    def has_delete_permission(self, request: WSGIRequest, obj: Any = None) -> bool:
-        return True
-
 
 class TeamAdmin(admin.ModelAdmin):
-    """ TeamAdmin """
+    """TeamAdmin."""
 
     model = Team
-
+    readonly_fields = ()
     list_display = (
         'title',
         'stadium'
@@ -68,9 +70,9 @@ class TeamAdmin(admin.ModelAdmin):
     def get_readonly_fields(
         self,
         request: WSGIRequest,
-        obj: Optional[Stadium] = None
-    ) -> tuple:
-        """ get readonly fields """
+        obj: Optional[Team] = None
+    ) -> tuple[str, ...]:
+        """Get readonly fields."""
 
         if not obj:
             return self.readonly_fields
@@ -80,21 +82,12 @@ class TeamAdmin(admin.ModelAdmin):
             'stadium'
         )
 
-    def has_add_permission(self, request: WSGIRequest) -> bool:
-        return True
-
-    def has_change_permission(self, request: WSGIRequest, obj: Any = None) -> bool:
-        return True
-
-    def has_delete_permission(self, request: WSGIRequest, obj: Any = None) -> bool:
-        return True
-
 
 class StadiumAdmin(admin.ModelAdmin):
-    """ StadiumAdmin """
+    """StadiumAdmin."""
 
     model = Stadium
-
+    readonly_fields = ()
     list_display = (
         'title',
         'capacity',
@@ -105,8 +98,8 @@ class StadiumAdmin(admin.ModelAdmin):
         self,
         request: WSGIRequest,
         obj: Optional[Stadium] = None
-    ) -> tuple:
-        """ get readonly fields """
+    ) -> tuple[str, ...]:
+        """Get readonly fields."""
 
         if not obj:
             return self.readonly_fields
@@ -117,19 +110,28 @@ class StadiumAdmin(admin.ModelAdmin):
             'city'
         )
 
-    def has_add_permission(self, request: WSGIRequest) -> bool:
-        return True
 
-    def has_change_permission(self, request: WSGIRequest, obj: Any = None) -> bool:
-        return True
+class EventAdmin(admin.ModelAdmin):
+    """EventAdmin."""
 
-    def has_delete_permission(self, request: WSGIRequest, obj: Any = None) -> bool:
-        return True
+    model = Event
 
 
+class ResultAdmin(admin.ModelAdmin):
+    """ResultAdmin."""
+
+    model = Result
+
+
+class BetAdmin(admin.ModelAdmin):
+    """BetAdmin."""
+
+    model = Bet
+
+
+admin.site.register(Player, PlayerAdmin)
 admin.site.register(Team, TeamAdmin)
 admin.site.register(Stadium, StadiumAdmin)
-admin.site.register(Player, PlayerAdmin)
-admin.site.register(Event)
-admin.site.register(Result)
-admin.site.register(Bet)
+admin.site.register(Event, EventAdmin)
+admin.site.register(Result, ResultAdmin)
+admin.site.register(Bet, BetAdmin)

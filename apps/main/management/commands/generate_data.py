@@ -1,7 +1,6 @@
 # Python
 import random
 from typing import Any
-from datetime import datetime
 
 # Third party
 import names
@@ -17,8 +16,7 @@ from main.models import (
     Stadium,
     Team
 )
-from main.tasks import create_event
-from abstracts.utils import get_eta_time
+from abstracts.decorators import performance_counter
 
 
 class Command(BaseCommand):
@@ -30,10 +28,9 @@ class Command(BaseCommand):
         pass
 
     def generate_players(self) -> None:
-
         PLAYERS_COUNT: int = 250
         MAX_POWER: int = 99
-        MIN_POWER: int = 30
+        MIN_POWER: int = 50
         MAX_AGE: int = 40
         MIN_AGE: int = 17
 
@@ -58,15 +55,16 @@ class Command(BaseCommand):
                 age=random.randrange(
                     MIN_AGE,
                     MAX_AGE
-                ),
-                email = 'jegiben516@fsouda.com'   
+                )
             )
 
     def generate_teams_and_stadiums(self) -> None:
 
         def generate_stadium_title(code: str) -> str:
             if isinstance(code, tuple):
-                return f'Some Stadium'
+
+                return 'Some Stadium'
+
             return f'{code} Stadium'
 
         countries_url: str = (
@@ -123,18 +121,45 @@ class Command(BaseCommand):
                     stadium=stadium
                 )
 
-    def generate_task(self):
-        create_event.apply_async(
-            eta=get_eta_time(10)
+    def sync_data(self) -> None:
+
+        team: Team
+        for team in Team.objects.all():
+            players: list[Player] = list(
+                Player.objects.all()
+            )
+            random.shuffle(players)
+            team.players.set(
+                players[:Team.MAX_PLAYERS]
+            )
+
+    def update_player_status(self) -> None:
+
+        player: Player
+        for player in Player.objects.filter(team__isnull=False):
+            player.status = Player.STATUS_TEAM_MEMBER
+            player.save(update_fields=('status',))
+
+    def fix_player_min_power(self) -> None:
+
+        # player: Player
+        # for player in Player.objects.filter(
+        #     power__lt=Player.ADULT_TEAM_MIN_POWER
+        # ):
+        #     player.power = Player.ADULT_TEAM_MIN_POWER
+        #     player.save(update_fields=('power',))
+
+        Player.objects.filter(
+            power__lt=Player.ADULT_TEAM_MIN_POWER
+        ).update(
+            power=Player.ADULT_TEAM_MIN_POWER
         )
 
+    @performance_counter
     def handle(self, *args: Any, **kwargs: Any) -> None:
         """Handles data filling."""
-
-        start: datetime = datetime.now()
-        # self.generate_players()
-        # self.generate_teams_and_stadiums()
-        self.generate_task()
-        print(
-            f'Generated in: {(datetime.now()-start).total_seconds()} seconds'
-        )
+        self.generate_players()
+        self.generate_teams_and_stadiums()
+        self.sync_data()
+        self.update_player_status()
+        self.fix_player_min_power()

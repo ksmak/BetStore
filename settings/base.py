@@ -3,11 +3,12 @@ import os
 import sys
 from pathlib import Path
 from datetime import timedelta
-from typing import Any
 
 # Third party
 from decouple import config
-from rest_framework import status
+
+# Local
+from .conf.third_party import *  # noqa
 
 
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -19,10 +20,13 @@ ALLOWED_HOSTS = ['*']
 
 STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
-WSGI_APPLICATION = 'settings.wsgi.application'
+WSGI_APPLICATION = 'settings.deploy.wsgi.application'
 ROOT_URLCONF = 'settings.urls'
 
+AUTH_USER_MODEL = 'auths.Client'
 
 DJANGO_APPS = [
     'django.contrib.admin',
@@ -31,21 +35,17 @@ DJANGO_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'rest_framework',
+    'rest_framework_simplejwt',
     'django_extensions',
     'debug_toolbar',
-    'rest_framework',
-    'rest_framework_simplejwt'
 ]
-
 PROJECT_APPS = [
-    'main.apps.MainConfig',
-    'auths.apps.AuthsConfig',
     'abstracts.apps.AbstractsConfig',
+    'auths.apps.AuthsConfig',
+    'main.apps.MainConfig'
 ]
-
 INSTALLED_APPS = DJANGO_APPS + PROJECT_APPS
-
-AUTH_USER_MODEL = 'auths.Client'
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -55,9 +55,8 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'debug_toolbar.middleware.DebugToolbarMiddleware'
+    'debug_toolbar.middleware.DebugToolbarMiddleware',
 ]
-
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
@@ -87,79 +86,24 @@ AUTH_PASSWORD_VALIDATORS = [
     {'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator'},  # noqa
     {'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator'}  # noqa
 ]
-LANGUAGE_CODE = 'ru'
+LANGUAGE_CODE = 'en-us'
 TIME_ZONE = 'UTC'
 USE_I18N = True
 USE_TZ = True
-# ------------------------------------------------
-# Debug-toolbar
-#
-INTERNAL_IPS = (
-    '127.0.0.1',
-)
-DEBUG_TOOLBAR_PANELS = [
-    'debug_toolbar.panels.versions.VersionsPanel',
-    'debug_toolbar.panels.timer.TimerPanel',
-    'debug_toolbar.panels.settings.SettingsPanel',
-    'debug_toolbar.panels.headers.HeadersPanel',
-    'debug_toolbar.panels.request.RequestPanel',
-    'debug_toolbar.panels.sql.SQLPanel',
-    'debug_toolbar.panels.staticfiles.StaticFilesPanel',
-    'debug_toolbar.panels.templates.TemplatesPanel',
-    'debug_toolbar.panels.cache.CachePanel',
-    'debug_toolbar.panels.signals.SignalsPanel',
-    'debug_toolbar.panels.logging.LoggingPanel',
-    'debug_toolbar.panels.redirects.RedirectsPanel',
-]
-DEBUG_TOOLBAR_PATCH_SETTINGS = False
-# ------------------------------------------------
-# Shell-plus
-#
-SHELL_PLUS_PRE_IMPORTS = [
-    ('django.db', ('connection', 'connections', 'reset_queries')),
-    ('datetime', ('datetime', 'timedelta', 'date')),
-    ('json', ('loads', 'dumps'))
-]
-SHELL_PLUS_MODEL_ALIASES = {
-    'main': {
-        'Team': 'T',
-        'Player': 'P',
-        'Event': 'E',
-        'Stadium': 'S'
-    }
-}
-SHELL_PLUS = 'ipython'
-SHELL_PLUS_PRINT_SQL = False
-SHELL_PLUS_PRINT_SQL_TRUNCATE = 1000
+
 # -------------------------------------------------
-# Email
+# Email-host
 #
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_USE_TLS = True
+EMAIL_PORT = 587
 EMAIL_HOST = config('EMAIL_HOST', cast=str)
 EMAIL_HOST_USER = config('EMAIL_HOST_USER', cast=str)
 EMAIL_HOST_PASSWORD = config('EMAIL_HOST_PASSWORD', cast=str)
-EMAIL_PORT = config('EMAIL_PORT', cast=int)
-EMAIL_SEND_ADDR = config('EMAIL_SEND_ADDR', cast=str)
-# --------------------------------------------------
-# Celery
-#
-CELERY_BROKER_URL = 'redis://localhost:6379'
-CELERY_RESULT_BACKEND = 'redis://localhost:6379'
-# ------------------------------------------------
-# REST_FRAMEWORK
-#
-REST_FRAMEWORK = {
-    'DEFAULT_PERMISSION_CLASSES': (
-        'rest_framework.permissions.IsAuthenticated',
-    ),
-    'DEFAULT_AUTHENTICATION_CLASSES': (
-        'rest_framework_simplejwt.authentication.JWTAuthentication',
-    ),
-}
+
 SIMPLE_JWT = {
     "ACCESS_TOKEN_LIFETIME": timedelta(hours=1),
-    "REFRESH_TOKEN_LIFETIME": timedelta(hours=3),
+    "REFRESH_TOKEN_LIFETIME": timedelta(hours=2),
     "ROTATE_REFRESH_TOKENS": False,
     "BLACKLIST_AFTER_ROTATION": False,
     "UPDATE_LAST_LOGIN": False,
@@ -195,13 +139,4 @@ SIMPLE_JWT = {
     "TOKEN_BLACKLIST_SERIALIZER": "rest_framework_simplejwt.serializers.TokenBlacklistSerializer", # noqa
     "SLIDING_TOKEN_OBTAIN_SERIALIZER": "rest_framework_simplejwt.serializers.TokenObtainSlidingSerializer", # noqa
     "SLIDING_TOKEN_REFRESH_SERIALIZER": "rest_framework_simplejwt.serializers.TokenRefreshSlidingSerializer", # noqa
-}
-
-STATUS_CODES: dict[str, Any] = {
-    '500': status.HTTP_500_INTERNAL_SERVER_ERROR,
-    '404': status.HTTP_404_NOT_FOUND,
-    '403': status.HTTP_403_FORBIDDEN,
-    '400': status.HTTP_400_BAD_REQUEST,
-    '202': status.HTTP_202_ACCEPTED,
-    '200': status.HTTP_200_OK,
 }

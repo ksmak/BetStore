@@ -41,10 +41,7 @@ router: DefaultRouter = DefaultRouter(
 router.register('main', MainViewSet)
 
 urlpatterns += [
-    path('api/v1/', include(router.urls))
-]
-
-urlpatterns += [
+    path('api/v1/', include(router.urls)),
     path('api/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'), # noqa
     path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'), # noqa
     path('api/token/verify/', TokenVerifyView.as_view(), name='token_verify'),

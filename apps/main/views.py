@@ -22,7 +22,8 @@ from abstracts.mixins import (
 )
 from abstracts.paginators import (
     AbstractLimitOffsetPagination,
-    AbstractPageNumberPaginator
+    AbstractPageNumberPaginator,
+    MyPagination
 )
 # from abstracts.validators import APIValidator
 from main.permissions import MainPermission
@@ -97,6 +98,32 @@ class MainViewSet(ResponseMixin, ObjectMixin, ViewSet):
 
         paginator: AbstractLimitOffsetPagination = \
             AbstractLimitOffsetPagination()
+
+        objects: list = paginator.paginate_queryset(
+            self.queryset,
+            request
+        )
+        serializer: PlayerSerializer = \
+            PlayerSerializer(
+                objects,
+                many=True
+            )
+        return self.get_json_response(
+            serializer.data,
+            'players',
+            paginator
+        )
+
+    @action(
+        methods=['get'],
+        detail=False,
+        url_path='custom-pagination',
+        permission_classes=(AllowAny,)
+    )
+    def custom_pagination(self, request: Request) -> Response:
+
+        paginator: MyPagination = \
+            MyPagination()
 
         objects: list = paginator.paginate_queryset(
             self.queryset,

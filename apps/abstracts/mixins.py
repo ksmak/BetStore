@@ -32,28 +32,18 @@ class ResponseMixin:
     def get_json_response(
         self,
         data: dict[str, Any],
-        key_name: str = 'default'
+        key_name: str = 'default',
+        paginator: Any = None
     ) -> Response:
 
+        if paginator:
+            return paginator.get_paginated_response(
+                data
+            )
         return Response(
             {
                 'data': {
                     key_name: data
                 }
-            }
-        )
-
-
-class ErrorResponseMixin:
-    """ResponseMixin."""
-
-    def get_error_response(
-        self,
-        data: Any
-    ) -> Response:
-
-        return Response(
-            {
-                'errors': data
             }
         )

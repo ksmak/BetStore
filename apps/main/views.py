@@ -28,8 +28,11 @@ from abstracts.paginators import (
 )
 # from abstracts.validators import APIValidator
 from main.permissions import MainPermission
-from abstracts.connectors import RedisConnector
-from abstracts.utils import cache_for
+from abstracts.connectors import (
+    # RedisConnector,
+    FileConnector,
+)
+# from abstracts.utils import cache_for
 
 # Local
 from .models import Player
@@ -37,7 +40,7 @@ from .serializers import (
     PlayerCreateSerializer,
     PlayerSerializer
 )
-from .tasks import delete_redis_key
+from .tasks import delete_cache
 
 
 class MainViewSet(ResponseMixin, ObjectMixin, ViewSet):
@@ -58,7 +61,8 @@ class MainViewSet(ResponseMixin, ObjectMixin, ViewSet):
         permission_classes=(AllowAny,)
     )
     def get_all_players(self, request: Request) -> Response:
-        r_connector = RedisConnector()
+        # r_connector = RedisConnector()
+        r_connector = FileConnector()
 
         cached_data: Optional[Any] = r_connector.get('players')
         if not cached_data:
@@ -69,10 +73,12 @@ class MainViewSet(ResponseMixin, ObjectMixin, ViewSet):
                     many=True
                 )
             cached_data = serializer.data
-            r_connector.set('players', cached_data, cache_for(seconds=10))
+            # r_connector.set_ex('players', cached_data, cache_for(seconds=10))
+            r_connector.set('players', cached_data)
 
-        delete_redis_key.apply_async(
-            args=('players', ),
+        delete_cache.apply_async(
+            # args=('players', 'redis'),
+            args=('players', 'file'),
             eta=datetime.utcnow() + timedelta(hours=1)
         )
 

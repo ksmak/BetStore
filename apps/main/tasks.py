@@ -16,7 +16,11 @@ from .models import (
     Team
 )
 
-from abstracts.connectors import RedisConnector
+from abstracts.connectors import (
+    BaseConnector,
+    RedisConnector,
+    FileConnector,
+)
 
 
 @app.task(
@@ -89,6 +93,13 @@ def create_event(**kwargs: Any) -> None:
 
 
 @app.task
-def delete_redis_key(key: str) -> None:
-    r_connector = RedisConnector()
+def delete_cache(key: str, connector: str) -> None:
+    r_connector: BaseConnector
+    if connector == 'redis':
+        r_connector = RedisConnector()
+    elif connector == 'file':
+        r_connector = FileConnector()
+    else:
+        raise ValueError('Unknown connector type!')
+
     r_connector.delete(key)

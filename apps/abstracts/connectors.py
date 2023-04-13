@@ -13,7 +13,7 @@ class BaseConnector(ABC):
     "BaseConnector."
 
     @abstractmethod
-    def get(self, key: str) -> Optional[Any]:
+    def get(self, key: str) -> Optional[dict[str, Any]]:
         pass
 
     @abstractmethod
@@ -40,7 +40,7 @@ class RedisConnector(BaseConnector):
         self.protocol = protocol
 
     def get(self, key: str) -> Optional[dict[str, Any]]:
-        value: Any = self.db.get(key)
+        value: Optional[dict[str, Any]] = self.db.get(key)
         if not value:
             return None
         return pickle.loads(value)
@@ -98,13 +98,13 @@ class FileConnector(BaseConnector):
     ) -> None:
         self.path = path
 
-    def get(self, key: str) -> Any:
-        value: Any = None
-        file_name = os.path.join(self.path, key + '.pickle')
+    def get(self, key: str) -> Optional[dict[str, Any]]:
+        value: Optional[dict[str, Any]] = None
+        file_name: str = os.path.join(self.path, key + '.pickle')
         try:
             if os.path.exists(file_name):
                 with open(file_name, 'rb') as f:
-                    value: Any = pickle.load(f)
+                    value = pickle.load(f)
         except Exception as e:
             print(e)
             return None
@@ -116,7 +116,7 @@ class FileConnector(BaseConnector):
         key: str,
         value: Any,
     ) -> None:
-        file_name = os.path.join(self.path, key + '.pickle')
+        file_name: str = os.path.join(self.path, key + '.pickle')
         try:
             with open(file_name, 'wb') as f:
                 pickle.dump(value, f)
@@ -125,7 +125,7 @@ class FileConnector(BaseConnector):
             return
 
     def delete(self, key: str) -> None:
-        file_name = os.path.join(self.path, key + '.pickle')
+        file_name: str = os.path.join(self.path, key + '.pickle')
         try:
             if os.path.exists(file_name):
                 os.remove(file_name)
@@ -144,7 +144,7 @@ class TextConnector(BaseConnector):
         self.path = path
 
     def get(self, key: str) -> Any:
-        file_name = os.path.join(self.path, key + '.txt')
+        file_name: str = os.path.join(self.path, key + '.txt')
         value: Any = None
         try:
             if os.path.exists(file_name):
@@ -161,7 +161,7 @@ class TextConnector(BaseConnector):
         key: str,
         value: dict[str, Any],
     ) -> None:
-        file_name = os.path.join(self.path, key + '.txt')
+        file_name: str = os.path.join(self.path, key + '.txt')
         try:
             with open(file_name, 'w') as f:
                 f.write(json.dumps(value))
@@ -170,7 +170,7 @@ class TextConnector(BaseConnector):
             return
 
     def delete(self, key: str) -> None:
-        file_name = os.path.join(self.path, key + '.txt')
+        file_name: str = os.path.join(self.path, key + '.txt')
         try:
             if os.path.exists(file_name):
                 os.remove(file_name)

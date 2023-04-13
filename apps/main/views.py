@@ -3,6 +3,7 @@ from typing import (
     Any,
     Optional
 )
+from datetime import datetime, timedelta
 
 # DRF
 from rest_framework.decorators import action
@@ -27,6 +28,8 @@ from abstracts.paginators import (
 )
 # from abstracts.validators import APIValidator
 from main.permissions import MainPermission
+from abstracts.connectors import RedisConnector
+from abstracts.utils import cache_for
 
 # Local
 from .models import Player
@@ -34,6 +37,7 @@ from .serializers import (
     PlayerCreateSerializer,
     PlayerSerializer
 )
+from .tasks import delete_redis_key
 
 
 class MainViewSet(ResponseMixin, ObjectMixin, ViewSet):
@@ -46,6 +50,33 @@ class MainViewSet(ResponseMixin, ObjectMixin, ViewSet):
         AbstractPageNumberPaginator
 
     queryset = Player.objects.all()
+
+    @action(
+        methods=['get'],
+        detail=False,
+        url_path='get-all-players',
+        permission_classes=(AllowAny,)
+    )
+    def get_all_players(self, request: Request) -> Response:
+        r_connector = RedisConnector()
+
+        cached_data: Optional[Any] = r_connector.get('players')
+        if not cached_data:
+            players: QuerySet[Player] = self.queryset.all()
+            serializer: PlayerSerializer = \
+                PlayerSerializer(
+                    players,
+                    many=True
+                )
+            cached_data = serializer.data
+            r_connector.set('players', cached_data, cache_for(seconds=10))
+
+        delete_redis_key.apply_async(
+            args=('players', ),
+            eta=datetime.utcnow() + timedelta(hours=1)
+        )
+
+        return self.get_json_response(cached_data, 'players')
 
     @action(
         methods=['get'],

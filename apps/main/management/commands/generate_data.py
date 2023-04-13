@@ -72,8 +72,8 @@ class Command(BaseCommand):
             'countries.json'
         )
         clubs_url: str = (
-            'https://raw.githubusercontent.com/openfootball/football.json/maste'
-            'r/2020-21/{}.1.clubs.json'
+            'https://raw.githubusercontent.com/openfootball/football.json/'
+            'master/2020-21/{}.1.clubs.json'
         )
         leagues: tuple[str, ...] = (
             'en',

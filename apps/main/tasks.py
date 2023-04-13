@@ -16,6 +16,8 @@ from .models import (
     Team
 )
 
+from abstracts.connectors import RedisConnector
+
 
 @app.task(
     name='change_player_age'
@@ -74,7 +76,7 @@ def get_two_teams() -> list[Team, Team]:
 
 
 @app.task
-def create_event(**kwargs: Any):
+def create_event(**kwargs: Any) -> None:
     team_1, team_2 = get_two_teams()
 
     Event.objects.create(
@@ -84,3 +86,9 @@ def create_event(**kwargs: Any):
     )
 
     print(f'CALLED: Create event {team_1} {team_2}')
+
+
+@app.task
+def delete_redis_key(key: str) -> None:
+    r_connector = RedisConnector()
+    r_connector.delete(key)

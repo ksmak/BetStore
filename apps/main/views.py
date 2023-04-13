@@ -30,7 +30,8 @@ from abstracts.paginators import (
 from main.permissions import MainPermission
 from abstracts.connectors import (
     # RedisConnector,
-    FileConnector,
+    # FileConnector,
+    TextConnector
 )
 # from abstracts.utils import cache_for
 
@@ -62,7 +63,8 @@ class MainViewSet(ResponseMixin, ObjectMixin, ViewSet):
     )
     def get_all_players(self, request: Request) -> Response:
         # r_connector = RedisConnector()
-        r_connector = FileConnector()
+        # r_connector = FileConnector()
+        r_connector = TextConnector()
 
         cached_data: Optional[Any] = r_connector.get('players')
         if not cached_data:

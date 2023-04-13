@@ -2,6 +2,7 @@ import os
 from typing import Optional, Any
 from abc import ABC, abstractmethod
 import pickle
+import json
 
 from django.conf import settings
 
@@ -125,6 +126,51 @@ class FileConnector(BaseConnector):
 
     def delete(self, key: str) -> None:
         file_name = os.path.join(self.path, key + '.pickle')
+        try:
+            if os.path.exists(file_name):
+                os.remove(file_name)
+        except Exception as e:
+            print(e)
+            return
+
+
+class TextConnector(BaseConnector):
+    """TextConnector."""
+
+    def __init__(
+        self,
+        path: str = settings.BASE_DIR,
+    ) -> None:
+        self.path = path
+
+    def get(self, key: str) -> Any:
+        file_name = os.path.join(self.path, key + '.txt')
+        value: Any = None
+        try:
+            if os.path.exists(file_name):
+                with open(file_name, 'r') as f:
+                    value: dict[str, Any] = json.loads(f.read())
+        except Exception as e:
+            print(e)
+            return None
+
+        return value
+
+    def set(
+        self,
+        key: str,
+        value: dict[str, Any],
+    ) -> None:
+        file_name = os.path.join(self.path, key + '.txt')
+        try:
+            with open(file_name, 'w') as f:
+                f.write(json.dumps(value))
+        except Exception as e:
+            print(e)
+            return
+
+    def delete(self, key: str) -> None:
+        file_name = os.path.join(self.path, key + '.txt')
         try:
             if os.path.exists(file_name):
                 os.remove(file_name)

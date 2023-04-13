@@ -20,6 +20,7 @@ from abstracts.connectors import (
     BaseConnector,
     RedisConnector,
     FileConnector,
+    TextConnector,
 )
 
 
@@ -99,6 +100,8 @@ def delete_cache(key: str, connector: str) -> None:
         r_connector = RedisConnector()
     elif connector == 'file':
         r_connector = FileConnector()
+    elif connector == 'text':
+        r_connector = TextConnector()
     else:
         raise ValueError('Unknown connector type!')
 
